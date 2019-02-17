@@ -1,0 +1,14 @@
+{% extends 'FinancialControl/index.html' %}
+
+{% block title %}
+    {{ account.description }} - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1 class="mt-5">
+        {{ account.object_name }}
+    </h1>
+    <p>
+        {{ account.description}}
+    </p>
+{% endblock %}

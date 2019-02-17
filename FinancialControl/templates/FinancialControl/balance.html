@@ -1,0 +1,25 @@
+{% extends 'FinancialControl/index.html' %}
+
+{% block title %}
+    Balances - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-5">Your balances:</h1>
+    {% for balance in balances %}
+
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">{{ balance.object_name }}</h5>
+                <p class="card-text">{{ balance.description| truncatewords:15 }}</p>
+                <a href="{{ balance.get_absolute_url }}" class="btn btn-primary">Go to balance</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    {% endfor %}
+{% endblock %}
+
