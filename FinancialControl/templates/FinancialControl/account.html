@@ -1,0 +1,14 @@
+{% extends 'FinancialControl/index.html' %}
+
+{% block title %}
+    Account - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="mb-5">Your accounts:</h1>
+    {% for account in accounts %}
+        {% include 'FinancialControl/includes/account_card_template.html' %}
+    {% endfor %}
+
+{% endblock %}
