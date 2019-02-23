@@ -9,7 +9,10 @@
         {{ balance.object_name }}
     </h1>
     <p>
-        {{ balance.description}}
+        {{ balance.description }}
+    </p>
+    <p>
+        {{ var }}
     </p>
     <p>Accounts</p>
     {% for account in balance.accounts.all %}

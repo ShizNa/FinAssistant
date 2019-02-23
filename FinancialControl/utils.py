@@ -2,13 +2,30 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
 
+def get_all_accounts_summ(b):
+    summ = 0
+    accounts = b.accounts.all()
+    for account in accounts:
+        summ = summ + account.amount
+    return summ
+    '''вариант как суммировать. не забыть подключить библиотеку from django.db.models import Sum
+    пока оставляем так, как выше написано, когда нужно будет конвертировать валюту - решим'''
+    # result = b.accounts.all().aggregate(Sum('amount'))
+    # return str(result['amount__sum'])
+
+
 class ObjectDetailMixin:
     model = None
     template = None
+    var = None
 
     def get(self, requst, slug):
         object = get_object_or_404(self.model, slug__iexact=slug)
-        return render(requst, self.template, context={self.model.__name__.lower(): object})
+
+        if (self.model.__name__.lower() == 'balance'):
+            self.var = get_all_accounts_summ(object)
+
+        return render(requst, self.template, context={self.model.__name__.lower(): object, 'var': self.var})
 
 
 class ObjectAddMixin:
