@@ -1,17 +1,23 @@
 from django.db import models
 from django.shortcuts import reverse
+from pytils.translit import slugify
+from time import time
 
-# Create your models here.
+
+# Generator for unic slug
+def gen_slug(s):
+    return slugify(s) + '-' + str(int(time()))
+
 
 class Currency(models.Model):
     object_name = models.CharField(max_length=128, db_index=True)
     description = models.TextField(blank=True, db_index=True)
-    slug = models.SlugField(max_length=8, unique=True)
+    slug = models.SlugField(max_length=8, unique=True, blank=True)
     code = models.CharField(max_length=8, db_index=True)
     create_date = models.DateTimeField(auto_now_add=True)
     modify_date = models.DateTimeField(auto_now=True)
 
-    #todo сделать возможность редактирования валюты, пока все через админку или shell
+    # todo сделать возможность редактирования валюты, пока все через админку или shell
     #     def get_absolute_url(self):
     #         return reverse('ccy_deatail_url', kwargs={'slug': self.slug})
 
@@ -22,12 +28,13 @@ class Currency(models.Model):
     def __unicode__(self):
         return '{}'.format(self.object_name)
 
-#Модель для описания баланаса
-#todo связать модель с пользователем!
+
+# Модель для описания баланаса
+# todo связать модель с пользователем!
 class Balance(models.Model):
     object_name = models.CharField(max_length=256, db_index=True)
     description = models.TextField(blank=True, db_index=True)
-    slug = models.SlugField(max_length=256, unique=True)
+    slug = models.SlugField(max_length=256, unique=True, blank=True)
     ccy = models.ForeignKey('Currency',
                             on_delete=models.CASCADE,
                             related_name='balances',
@@ -36,24 +43,41 @@ class Balance(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     modify_date = models.DateTimeField(auto_now=True)
 
-    #создали метод в стиле "соглашение django" для автогенерации url
+    # создали метод в стиле "соглашение django" для автогенерации url
     def get_absolute_url(self):
-        return reverse('balance_deatail_url', kwargs={'slug':self.slug})
+        return reverse('balance_deatail_url', kwargs={'slug': self.slug})
 
-    #переопределен вывод метода STR для удобства
+    def get_update_url(self):
+        return reverse('balance_update_url', kwargs={'slug': self.slug})
+
+    def get_delete_url(self):
+        return reverse('balance_delete_url', kwargs={'slug': self.slug})
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.slug = gen_slug(self.object_name)
+        super().save(*args, **kwargs)
+
+    # переопределен вывод метода STR для удобства
     def __str__(self):
         return '{}'.format(self.object_name)
 
     def __unicode__(self):
         return '{}'.format(self.object_name)
 
-#Модель для описания акаунта
-#todo type - посмотреть, может переопределить Field, может сделать отдельной моделью
+
+# Модель для описания акаунта
+# todo type - посмотреть, может переопределить Field, может сделать отдельной моделью
 class Account(models.Model):
     object_name = models.CharField(max_length=256, db_index=True)
     description = models.TextField(blank=True, db_index=True)
-    slug = models.SlugField(max_length=256, unique=True)
-    type = models.CharField(max_length=256, db_index=True)
+    slug = models.SlugField(max_length=256, unique=True, blank=True)
+    type = models.CharField(max_length=8,
+                            choices=(
+                                ('positive', 'Positive'),
+                                ('negative', 'Negative'),
+                            ),
+                            default='negative')
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     balance = models.ForeignKey('Balance',
                                 on_delete=models.CASCADE,
@@ -69,9 +93,20 @@ class Account(models.Model):
     modify_date = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return reverse('account_deatail_url', kwargs={'slug':self.slug})
+        return reverse('account_deatail_url', kwargs={'slug': self.slug})
 
-    #переопределен вывод метода STR для удобства
+    def get_update_url(self):
+        return reverse('account_update_url', kwargs={'slug': self.slug})
+
+    def get_delete_url(self):
+        return reverse('account_delete_url', kwargs={'slug': self.slug})
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.slug = gen_slug(self.object_name)
+        super().save(*args, **kwargs)
+
+    # переопределен вывод метода STR для удобства
     def __str__(self):
         return '{}'.format(self.object_name)
 
