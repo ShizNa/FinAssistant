@@ -13,6 +13,10 @@ class BalanceAdmin(admin.ModelAdmin):
 class AccountAdmin(admin.ModelAdmin):
     pass
 
+class AccountAmountHistoryAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Balance, BalanceAdmin)
+admin.site.register(AccountAmountHistory, AccountAmountHistoryAdmin)

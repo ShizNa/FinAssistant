@@ -108,6 +108,11 @@ class Account(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     modify_date = models.DateTimeField(auto_now=True)
 
+    # при инициализации экземпляра запоминаем текущее значение amount
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.current_amount = self.amount
+
     def get_absolute_url(self):
         return reverse('account_deatail_url', kwargs={'slug': self.slug})
 
@@ -120,7 +125,11 @@ class Account(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.slug = gen_slug(self.object_name)
-        super().save(*args, **kwargs)
+
+        if self.amount != self.current_amount:
+            AccountAmountHistory.objects.create(account_id=self.id, amount=self.amount)
+
+        return super().save(*args, **kwargs)
 
     # переопределен вывод метода STR для удобства
     def __str__(self):
@@ -128,3 +137,13 @@ class Account(models.Model):
 
     def __unicode__(self):
         return '{}'.format(self.object_name)
+
+
+class AccountAmountHistory(models.Model):
+    account = models.ForeignKey('Account',
+                                on_delete=models.CASCADE,
+                                related_name='amounts_history',
+                                related_query_name='amount_history'
+                                )
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    create_date = models.DateTimeField(auto_now_add=True)
