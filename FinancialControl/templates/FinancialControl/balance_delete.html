@@ -1,0 +1,16 @@
+{% extends 'FinancialControl/index.html' %}
+
+{% block title %}
+    Delete blance "{{ balance.object_name|title }}"- {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+    <form action="{{ balance.get_delete_url }}" method="post">
+        {% csrf_token %}
+        <h3> Do you really want to delete <b>{{ balance.object_name|title }}</b> balance ?</h3>
+        <a href="{{ balance.get_absolute_url }}">Cancel</a>
+        <button type="submit" class="btn btn-danger" name="balance_delete">Delete</button>
+    </form>
+
+{% endblock %}

@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block content %}
-    <h1 class="mb-5">Your balances:</h1>
+    <h1 class="mb-12">Your balances:</h1>
     {% for balance in balances %}
 
         <div class="row mb-2">
-          <div class="col-sm-6">
+          <div class="col-sm-10">
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title">{{ balance.object_name }}</h5>

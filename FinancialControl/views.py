@@ -1,26 +1,55 @@
-from django.shortcuts import render
 from django.views.generic import View
-from django.shortcuts import get_object_or_404
 
-from .models import Balance, Account
-from .utils import ObjectDetailMixin
+from .utils import *
+from .forms import *
 
-# Create your views here.
 
-class BalanceDetail(ObjectDetailMixin,View):
+class BalanceAdd(ObjectAddMixin, View):
+    model_form = BalanceForm
+    template = 'FinancialControl/balance_add.html'
+
+
+class BalanceUpdate(ObjectUpdateMixin, View):
+    model = Balance
+    model_form = BalanceForm
+    template = 'FinancialControl/balance_update.html'
+
+class BalanceDelete(ObjectDeleteMixin, View):
+    model = Balance
+    template = 'FinancialControl/balance_delete.html'
+    redirect_url = 'balances_list_url'
+
+
+class BalanceDetail(ObjectDetailMixin, View):
     model = Balance
     template = 'FinancialControl/balance_detail.html'
 
 
-class AccountDetail(ObjectDetailMixin,View):
+def balances_list(request):
+    return render(request, 'FinancialControl/balance.html', context={'balances': Balance.objects.all()})
+
+
+class AccountAdd(ObjectAddMixin, View):
+    model_form = AccountForm
+    template = 'FinancialControl/account_add.html'
+
+
+class AccountUpdate(ObjectUpdateMixin, View):
+    model = Account
+    model_form = AccountForm
+    template = 'FinancialControl/account_update.html'
+
+
+class AccountDelete(ObjectDeleteMixin, View):
+    model = Account
+    template = 'FinancialControl/account_delete.html'
+    redirect_url = 'account_list_url'
+
+
+class AccountDetail(ObjectDetailMixin, View):
     model = Account
     template = 'FinancialControl/account_detail.html'
 
 
-def balances_list(request):
-    balances = Balance.objects.all()
-    return render(request, 'FinancialControl/balance.html', context={'balances': balances})
-
 def accounts_list(request):
-    accounts = Account.objects.all()
-    return render(request,'FinancialControl/account.html', context={'accounts':accounts})
+    return render(request, 'FinancialControl/account.html', context={'accounts': Account.objects.all()})

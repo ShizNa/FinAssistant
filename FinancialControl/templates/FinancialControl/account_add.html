@@ -1,0 +1,30 @@
+{% extends 'FinancialControl/index.html' %}
+
+{% block title %}
+    Add account - {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+    <form action="{% url 'account_add_url' %}" method="post">
+        {% csrf_token %}
+
+
+        {% for field in form %}
+
+            <div class="form-group">
+                {% if field.errors %}
+                    <div class="alert alert-danger">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+                {{ field.label }}
+                {{ field }}
+            </div>
+
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary" name="account_add">Add</button>
+    </form>
+
+{% endblock %}
