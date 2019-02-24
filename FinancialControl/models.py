@@ -9,6 +9,18 @@ def gen_slug(s):
     return slugify(s) + '-' + str(int(time()))
 
 
+def get_all_accounts_summ(b):
+    summ = 0
+    accounts = b.accounts.all()
+    for account in accounts:
+        summ = summ + account.amount
+    return summ
+    '''вариант как суммировать. не забыть подключить библиотеку from django.db.models import Sum
+    пока оставляем так, как выше написано, когда нужно будет конвертировать валюту - решим'''
+    # result = b.accounts.all().aggregate(Sum('amount'))
+    # return str(result['amount__sum'])
+
+
 class Currency(models.Model):
     object_name = models.CharField(max_length=128, db_index=True)
     description = models.TextField(blank=True, db_index=True)
@@ -57,6 +69,10 @@ class Balance(models.Model):
         if not self.id:
             self.slug = gen_slug(self.object_name)
         super().save(*args, **kwargs)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.balance_amount = get_all_accounts_summ(self)
 
     # переопределен вывод метода STR для удобства
     def __str__(self):
