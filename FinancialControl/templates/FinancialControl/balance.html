@@ -5,21 +5,44 @@
 {% endblock %}
 
 {% block content %}
-    <h1 class="mb-12">Your balances:</h1>
-    {% for balance in balances %}
+    <h1 class="mb-12">Balances:</h1>
 
-        <div class="row mb-2">
-          <div class="col-sm-10">
+    <div class="accordion" id="accordionBalance">
+        {% for balance in balances %}
             <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">{{ balance.object_name }}</h5>
-                <p class="card-text">{{ balance.description| truncatewords:15 }}</p>
-                <a href="{{ balance.get_absolute_url }}" class="btn btn-primary">Go to balance</a>
-              </div>
-            </div>
-          </div>
-        </div>
+                <div class="card-header" id="{{ balance.slug }}">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link" type="button" data-toggle="collapse"
+                                data-target="#collapse-{{ forloop.counter }}"
+                                aria-expanded="true" aria-controls="collapse-{{ forloop.counter }}">
+                            {{ balance.object_name }}
+                        </button>
+                        <a href="{{ balance.get_absolute_url }}" class="btn btn-light">Go to balance</a>
+                    </h2>
+                </div>
 
-    {% endfor %}
+                <div id="collapse-{{ forloop.counter }}" class="collapse {% if forloop.counter == 1 %}
+                    show
+                {% endif %}" aria-labelledby="{{ balance.slug }}"
+                     data-parent="#accordionBalance">
+                    <div class="card-body">
+                        <div class="list-group">
+                            {% for account in balance.accounts.all %}
+                                <a href="{{ account.get_absolute_url }}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ account.object_name }}</h5>
+                                        <small>{{ account.amount }} {{account.ccy}}</small>
+                                    </div>
+                                    <p class="mb-1">{{ account.description }}</p>
+                                    <small>{{ account.type }}</small>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
 {% endblock %}
 
